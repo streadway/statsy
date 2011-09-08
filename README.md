@@ -2,7 +2,7 @@
 
 [cal][Cal made simple stat aggregation].  And it was good.
 
-[etsy][Etsy made simple stat aggregation].  And it was also good.
+[etsy][Etsy also made simple stat aggregation].  And it was also good.
 
 This is a simple client.  It does 2 things, increment and measure.  Oh 3 things if you count batching too.
 
@@ -26,28 +26,26 @@ Usage: Measure a timing stat that will calculate the mean, min, max, upper\_90 a
 
     client.measure("acme.backend-runtime", response.headers["X-Runtime"].to_i)
 
-Bonus: Batch up many things into a smaller packets
+Bonus points: Batch up many things into a smaller packets like in a shell script
 
     loop do
       batch_lines = 1000
       client.batch do |batch|
-        $stdin.each do |line|
-          metric, timing = parse(line) # <- you made that
-
+        $stdin.each do |log_line|
+          metric, timing = parse(log_line) # <- you made that
           client.measure metric, timing
-
           break if (batch_lines -= 1) <= 0
         end
       end
     end
 
-These stats end up in your graphite interface under the top level keys. Look for them there:
+These stats end up in your graphite interface under the top level keys. Look for them in this folders:
 
-    stats
-    stats/timings
     stats_counts
+    stats/timings
+    stats
 
-Enjoy.
+Fork it out of love.  Enjoy.
 
 [cal]:http://code.flickr.com/blog/2008/10/27/counting-timing/
 [etsy]:http://codeascraft.etsy.com/2011/02/15/measure-anything-measure-everything/

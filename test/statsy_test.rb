@@ -1,5 +1,5 @@
 require 'test/unit'
-require './statsy'
+require File.expand_path('../../lib/statsy', __FILE__)
 
 class Unit < Test::Unit::TestCase
   def setup
