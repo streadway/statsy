@@ -9,7 +9,7 @@ module Statsy
     # Atomically send a Statsd encoded message to the service
     # only call once per packet
     module Interface
-      def write; end
+      def write(stat); end
     end
 
     # UDP transport class that writes a stat per packet
@@ -42,8 +42,8 @@ module Statsy
     # Transport::Interface
     #
     # Usage:
-    #   client = Statsy.new
-    #   client = Statsy.new(Statsy::Transport::UDP.new("customstats", 8888))
+    #   client = Statsy::Client.new
+    #   client = Statsy::Client.new(Statsy::Transport::UDP.new("custom", 8888))
     #
     def initialize(transport=Transport::UDP.new("stats", 8125))
       @transport = transport
@@ -55,6 +55,7 @@ module Statsy
     #   client.increment("coffee.single-espresso")
     #   client.increment("coffee.single-espresso", 1)
     #   client.increment("coffee.single-espresso", 1, 0.5) # 50% of the time
+    #
     def increment(stat, count=1, sampling=1)
       if sampling < 1
         if Kernel.rand < sampling
@@ -93,6 +94,7 @@ module Statsy
     #
     #   => write "foo.bar:10|c:333|ms"
     #   => write "bat.baz:101|ms"
+    #
     def batch
       yield self.class.new(batch = Transport::Queue.new)
 
@@ -109,4 +111,3 @@ module Statsy
     end
   end
 end
-
