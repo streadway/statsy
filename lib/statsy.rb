@@ -9,7 +9,7 @@ module Statsy
     # Atomically send a Statsd encoded message to the service
     # only call once per packet
     module Interface
-      def write; end
+      def write(stat); end
     end
 
     # UDP transport class that writes a stat per packet
