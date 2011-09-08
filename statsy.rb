@@ -36,8 +36,6 @@ module Statsy
   end
 
   class Client
-    attr_reader :transport
-
     # Construct a client with a given transport that implements
     # Transport::Interface
     #
@@ -58,10 +56,10 @@ module Statsy
     def increment(stat, count=1, sampling=1)
       if sampling < 1
         if Kernel.rand < sampling
-          transport.write("%s:%d|c@%f" % [ stat, count, sampling ])
+          @transport.write("%s:%d|c@%f" % [ stat, count, sampling ])
         end
       else
-        transport.write("%s:%d|c" % [ stat, count ])
+        @transport.write("%s:%d|c" % [ stat, count ])
       end
       self
     end
@@ -73,7 +71,7 @@ module Statsy
     #
     def measure(stat, time, sampling=1)
       if sampling >= 1 || rand < sampling
-        transport.write("%s:%d|ms" % [ stat, time ])
+        @transport.write("%s:%d|ms" % [ stat, time ])
       end
       self
     end
@@ -103,7 +101,7 @@ module Statsy
         stats
       end.sort.each do |pairs|
         # [ "foo.bar", [ "10|c", "101|ms" ] ]
-        transport.write(pairs.flatten.join(":"))
+        @transport.write(pairs.flatten.join(":"))
       end
       self
     end
