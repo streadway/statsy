@@ -1,8 +1,8 @@
 # Statsy
 
-[cal][Cal made simple stat aggregation].  And it was good.
+[Cal made simple stat aggregation][cal].  And it was good.
 
-[etsy][Etsy also made simple stat aggregation].  And it was also good.
+[Etsy also made simple stat aggregation][etsy].  And it was also good.
 
 This is a simple client.  It does 2 things, increment and measure.  Oh 3 things if you count batching too.
 
