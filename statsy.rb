@@ -1,12 +1,20 @@
-# Client to access statsd authored by etsy.
+# Client to access statsd service authored by etsy. Yay etsy!
 # https://github.com/etsy/statsd
 module Statsy
   module Transport
     require 'socket'
 
+    # Atomically send a Statsd encoded message to the service
+    # only call once per packet
+    module Interface
+      def write; end
+    end
+
     # UDP transport class that writes a stat per packet
     # connects on construction, doesn't handle exceptions
     class UDP < UDPSocket
+      include Interface
+
       def initialize(host, port)
         super()
         connect(host, port)
@@ -19,6 +27,8 @@ module Statsy
 
     # Queue transport writes for tests and batch operations
     class Queue < Array
+      include Interface
+
       def write(stat)
         self.push(stat)
       end
@@ -28,11 +38,12 @@ module Statsy
   class Client
     attr_reader :transport
 
-    # Construct a client with a given transport
+    # Construct a client with a given transport that implements
+    # Transport::Interface
     #
     # Usage:
     #   client = Statsy.new
-    #   client = Statsy.new(Statsy::Transport::TCP.new("customstats", 8888))
+    #   client = Statsy.new(Statsy::Transport::UDP.new("customstats", 8888))
     #
     def initialize(transport=Transport::UDP.new("stats", 8125))
       @transport = transport
@@ -45,11 +56,14 @@ module Statsy
     #   client.increment("coffee.single-espresso", 1)
     #   client.increment("coffee.single-espresso", 1, 0.5) # 50% of the time
     def increment(stat, count=1, sampling=1)
-      if sampling < 1 && rand < sampling
-        transport.write("%s:%d|c@%f" % [ stat, count, sampling ])
+      if sampling < 1
+        if Kernel.rand < sampling
+          transport.write("%s:%d|c@%f" % [ stat, count, sampling ])
+        end
       else
         transport.write("%s:%d|c" % [ stat, count ])
       end
+      self
     end
 
     # Sample a timing
@@ -61,6 +75,7 @@ module Statsy
       if sampling >= 1 || rand < sampling
         transport.write("%s:%d|ms" % [ stat, time ])
       end
+      self
     end
 
     # Batch multiple transport operations, that will group any counts together
@@ -104,6 +119,10 @@ if __FILE__==$0
       @client = Statsy::Client.new(@transport)
     end
 
+    def test_increment_should_return_self
+      assert_equal @client, @client.increment("foo.stat")
+    end
+
     def test_increment_should_form_single_count
       @client.increment("foo.stat")
       assert_equal "foo.stat:1|c", @transport.shift
@@ -117,6 +136,10 @@ if __FILE__==$0
     def test_increment_should_sample
       @client.increment("foo.stat", 1, 0.999999)
       assert_equal "foo.stat:1|c@0.999999", @transport.shift
+    end
+
+    def test_measure_should_return_self
+      assert_equal @client, @client.measure("foo.stat", 100)
     end
 
     def test_measure_should_form_ms_rate
@@ -135,6 +158,10 @@ if __FILE__==$0
       assert_equal 2, @transport.size
       assert_equal "foo.inc:1|c", @transport.shift
       assert_equal "foo.inc:2|c", @transport.shift
+    end
+
+    def test_batch_should_return_self
+      assert_equal @client, @client.batch { }
     end
 
     def test_batch_should_write_same_as_increment
@@ -183,6 +210,11 @@ if __FILE__==$0
       assert_equal 2, @transport.size
       assert_equal "bar.inc:3|c:700|ms", @transport.shift
       assert_equal "foo.inc:2|c:500|ms", @transport.shift
+    end
+
+    def test_sampling_should_not_send_when_not_sampled
+      @client.increment("foo.sampled", 1, 0.000001)
+      assert_equal 0, @transport.size
     end
 
     def test_batch_should_be_nestable
