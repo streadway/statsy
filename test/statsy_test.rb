@@ -40,6 +40,11 @@ class Unit < Test::Unit::TestCase
     assert_equal nil, @transport.shift
   end
 
+  def test_measure_should_include_sample_rate
+    @client.measure("foo.sampled.timing", 100, 0.999999)
+    assert_equal "foo.sampled.timing:100|ms@0.999999", @transport.shift
+  end
+
   def test_increment_twice_should_write_twice
     @client.increment("foo.inc", 1)
     @client.increment("foo.inc", 2)

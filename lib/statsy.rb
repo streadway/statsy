@@ -73,7 +73,11 @@ module Statsy
     #   client.measure("foo.backendtime", response.headers["X-Runtime"].to_i)
     #
     def measure(stat, time, sampling=1)
-      if sampling >= 1 || rand < sampling
+      if sampling < 1
+        if Kernel.rand < sampling
+          @transport.write("%s:%d|ms@%f" % [ stat, time, sampling ])
+        end
+      else
         @transport.write("%s:%d|ms" % [ stat, time ])
       end
       self
