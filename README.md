@@ -26,7 +26,7 @@ Usage: Measure a timing stat that will calculate the mean, min, max, upper\_90 a
 
     client.measure("acme.backend-runtime", response.headers["X-Runtime"].to_i)
 
-Bonus points: Batch up many things into a smaller packets like in a shell script
+Bonus points: Batch up many things into a fewer packets like in a shell script
 
     loop do
       batch_lines = 1000
