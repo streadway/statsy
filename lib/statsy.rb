@@ -1,7 +1,7 @@
 # Client to access statsd service authored by etsy. Yay etsy!
 # https://github.com/etsy/statsd
 module Statsy
-  VERSION="0.1.1"
+  VERSION="0.1.2"
 
   module Transport
     require 'socket'
