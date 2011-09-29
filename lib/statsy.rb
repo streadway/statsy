@@ -1,7 +1,7 @@
 # Client to access statsd service authored by etsy. Yay etsy!
 # https://github.com/etsy/statsd
 module Statsy
-  VERSION="0.1.2"
+  VERSION="0.1.3"
 
   module Transport
     require 'socket'
@@ -102,7 +102,7 @@ module Statsy
       self
     end
 
-  private
+  protected
     def write(stat, value, modifier, sampling)
       if sampling < 1
         if Kernel.rand < sampling
