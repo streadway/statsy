@@ -1,6 +1,32 @@
 require 'test/unit'
 require File.expand_path('../../lib/statsy', __FILE__)
 
+class SubclassUnit < Test::Unit::TestCase
+  class Frob < Statsy::Client
+  protected
+    def write(stat, value, modifier, sampling)
+      super("frob", value, modifier, sampling)
+    end
+  end
+
+  def setup
+    @transport = Statsy::Transport::Queue.new
+    @client = Frob.new(@transport)
+  end
+
+  def test_subclass_should_override_write_with_full_frobbing
+    transport = Statsy::Transport::Queue.new
+    client = Statsy::Client.new()
+
+    @client.increment("foo.stat", 1)
+    @client.measure("foo.mess", 100)
+
+    assert_equal 2, @transport.size
+    assert_equal "frob:1|c", @transport.shift
+    assert_equal "frob:100|ms", @transport.shift
+  end
+end
+
 class Unit < Test::Unit::TestCase
   def setup
     @transport = Statsy::Transport::Queue.new
