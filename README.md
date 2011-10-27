@@ -33,7 +33,7 @@ Bonus points: Batch up many things into a fewer packets like in a shell script
       client.batch do |batch|
         $stdin.each do |log_line|
           metric, timing = parse(log_line) # <- you made that
-          client.measure metric, timing
+          batch.measure metric, timing
           break if (batch_lines -= 1) <= 0
         end
       end
