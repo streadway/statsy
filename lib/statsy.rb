@@ -49,7 +49,8 @@ module Statsy
       @transport = transport
     end
 
-    # Increment a count optionally at a random sample rate
+    # Increment a count optionally at a random sample rate.  These keys will
+    # live under the stats and stats_counts keys.
     #
     # Usage:
     #   client.increment("coffee.single-espresso")
@@ -61,10 +62,26 @@ module Statsy
       self
     end
 
-    # Sample a timing
+    # Sample a timing.  The units of the timing are up to you and your
+    # consumers, milliseconds is common.
+    #
+    # Including the units in the key name will help communicate the units to
+    # consumers of these measurements.
+    #
+    # The statistics will be aggregated over the sampling period configured in
+    # your statsd.  By default this is every 10 seconds.
+    #
+    # In graphite, these reports will end up under the stats.timings key.
     #
     # Usage:
     #   client.measure("foo.backendtime", response.headers["X-Runtime"].to_i)
+    #
+    # Produces the statistics found per sampling interval.
+    #   stats.timings.foo.backendtime.count
+    #   stats.timings.foo.backendtime.lower
+    #   stats.timings.foo.backendtime.mean_90
+    #   stats.timings.foo.backendtime.upper
+    #   stats.timings.foo.backendtime.upper_90
     #
     def measure(stat, time, sampling=1)
       write(stat, time, 'ms', sampling)
