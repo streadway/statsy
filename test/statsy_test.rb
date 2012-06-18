@@ -23,7 +23,7 @@ class Unit < Test::Unit::TestCase
 
   def test_increment_should_sample
     @client.increment("foo.stat", 1, 0.999999)
-    assert_equal "foo.stat:1|c@0.999999", @transport.shift
+    assert_equal "foo.stat:1|c|@0.999999", @transport.shift
   end
 
   def test_measure_should_return_self
@@ -33,16 +33,6 @@ class Unit < Test::Unit::TestCase
   def test_measure_should_form_ms_rate
     @client.measure("foo.timing", 1000)
     assert_equal "foo.timing:1000|ms", @transport.shift
-  end
-
-  def test_measure_should_sample
-    @client.measure("foo.sampled.timing", 100, 0.0000001)
-    assert_equal nil, @transport.shift
-  end
-
-  def test_measure_should_include_sample_rate
-    @client.measure("foo.sampled.timing", 100, 0.999999)
-    assert_equal "foo.sampled.timing:100|ms@0.999999", @transport.shift
   end
 
   def test_increment_twice_should_write_twice

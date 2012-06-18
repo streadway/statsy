@@ -57,7 +57,13 @@ module Statsy
     #   client.increment("coffee.single-espresso", 1, 0.5) # 50% of the time
     #
     def increment(stat, count=1, sampling=1)
-      write(stat, count, 'c', sampling)
+      if sampling < 1
+        if Kernel.rand < sampling
+          @transport.write("%s:%d|c|@%f" % [ stat, count, sampling ])
+        end
+      else
+        @transport.write("%s:%d|c" % [ stat, count ])
+      end
       self
     end
 
@@ -66,8 +72,8 @@ module Statsy
     # Usage:
     #   client.measure("foo.backendtime", response.headers["X-Runtime"].to_i)
     #
-    def measure(stat, time, sampling=1)
-      write(stat, time, 'ms', sampling)
+    def measure(stat, time)
+      @transport.write('%s:%d|ms' % [ stat, time ])
       self
     end
 
@@ -100,17 +106,6 @@ module Statsy
         @transport.write(pairs.flatten.join(":"))
       end
       self
-    end
-
-  private
-    def write(stat, value, modifier, sampling)
-      if sampling < 1
-        if Kernel.rand < sampling
-          @transport.write("%s:%d|%s@%f" % [ stat, value, modifier, sampling ])
-        end
-      else
-        @transport.write("%s:%d|%s" % [ stat, value, modifier ])
-      end
     end
   end
 end
