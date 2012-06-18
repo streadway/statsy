@@ -77,6 +77,16 @@ module Statsy
       self
     end
 
+    # Record an arbitrary value
+    #
+    # Usage:
+    #   client.record("foo.arbitrary", response.headers["X-Runtime"].to_i)
+    #
+    def record(stat, gauge)
+      @transport.write('%s:%d|g' % [ stat, gauge ])
+      self
+    end
+
     # Batch multiple transport operations, that will group any counts together
     # and send the fewest number of packets with the counts/timers optimized at
     # the end of the batch block.

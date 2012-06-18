@@ -116,4 +116,13 @@ class Unit < Test::Unit::TestCase
     assert_equal "bar.inc:700|ms:900|ms:3|c", @transport.shift
     assert_equal "foo.inc:2|c:9|c:500|ms", @transport.shift
   end
+
+  def test_record_should_return_self
+    assert_equal @client, @client.record("foo.bar", 100)
+  end
+
+  def test_record_should_form_gauge
+    @client.record("foo.bar", 333)
+    assert_equal "foo.bar:333|g", @transport.shift
+  end
 end

@@ -4,7 +4,13 @@
 
 [Etsy also made simple stat aggregation][etsy] - And it was also good.
 
-This is a simple client. It does only two things: increment and measure. Oh 3 things if you count batching too.
+This is a simple client. It supports:
+
+* counts
+* time measurements
+* recording gauges
+* sampling
+* batching
 
 ## Requirements
 
