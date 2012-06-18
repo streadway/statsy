@@ -15,9 +15,6 @@ class SubclassUnit < Test::Unit::TestCase
   end
 
   def test_subclass_should_override_write_with_full_frobbing
-    transport = Statsy::Transport::Queue.new
-    client = Statsy::Client.new()
-
     @client.increment("foo.stat", 1)
     @client.measure("foo.mess", 100)
 
