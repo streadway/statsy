@@ -94,6 +94,16 @@ module Statsy
       self
     end
 
+    # Record an arbitrary value
+    #
+    # Usage:
+    #   client.record("foo.arbitrary", 42)
+    #
+    def record(stat, gauge)
+      write(stat, gauge, 'g', 1)
+      self
+    end
+
     # Batch multiple transport operations, that will group any counts together
     # and send the fewest number of packets with the counts/timers optimized at
     # the end of the batch block.

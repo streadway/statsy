@@ -8,6 +8,7 @@ This is a simple client. It supports:
 
 * counts
 * time measurements
+* recording gauges
 * sampling
 * batching
 
