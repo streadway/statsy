@@ -18,6 +18,11 @@ This client is compatible with a [Statsd][statsd] server version >= 0.1.0.
 
 ## Installation
 
+[![Build Status][status]][travis]
+
+[status]: https://secure.travis-ci.org/streadway/statsy.png
+[travis]: http://www.travis-ci.org/streadway/statsy
+
     gem install statsy
 
 ## Usage
