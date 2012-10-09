@@ -44,9 +44,12 @@ module Statsy
     # Usage:
     #   client = Statsy::Client.new
     #   client = Statsy::Client.new(Statsy::Transport::UDP.new("custom", 8888))
+    #   client = Statsy::Client.new(Statsy::Transport::UDP.new(...), 0.5)
     #
-    def initialize(transport=Transport::UDP.new("stats", 8125))
+    def initialize(transport=Transport::UDP.new("stats", 8125),
+		   default_sampling=1)
       @transport = transport
+      @default_sampling = default_sampling
     end
 
     # Increment a count optionally at a random sample rate.  These keys will
@@ -57,7 +60,7 @@ module Statsy
     #   client.increment("coffee.single-espresso", 1)
     #   client.increment("coffee.single-espresso", 1, 0.5) # 50% of the time
     #
-    def increment(stat, count=1, sampling=1)
+    def increment(stat, count=1, sampling=@default_sampling)
       if sampling < 1
         if Kernel.rand < sampling
           write(stat, count, 'c', sampling)
