@@ -124,7 +124,7 @@ module Statsy
     #   => write "bat.baz:101|ms"
     #
     def batch
-      yield self.class.new(batch = Transport::Queue.new)
+      yield self.class.new(batch = Transport::Queue.new, @default_sampling)
 
       batch.inject(Hash.new { |h,k| h[k]=[] }) do |stats, stat|
         # [ "foo.bar:10|c", "foo.bar:101|ms" ]

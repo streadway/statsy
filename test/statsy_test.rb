@@ -152,6 +152,15 @@ class Unit < Test::Unit::TestCase
     assert_equal "foo.inc:2|c:9|c:500|ms", @transport.shift
   end
 
+  def test_batch_should_propagate_default_sampling
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.batch do |c|
+      c.increment("foo.inc", 1)
+    end
+    assert_equal 1, @transport.size
+    assert_equal "foo.inc:1|c|@0.999999", @transport.shift
+  end
+
   def test_record_should_return_self
     assert_equal @client, @client.record("foo.bar", 100)
   end
