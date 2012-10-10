@@ -49,6 +49,18 @@ class Unit < Test::Unit::TestCase
     assert_equal "foo.stat:1|c|@0.999999", @transport.shift
   end
 
+  def test_increment_with_default_sampling_should_sample
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.increment("foo.stat", 1)
+    assert_equal "foo.stat:1|c|@0.999999", @transport.shift
+  end
+
+  def test_increment_with_explicit_sampling_overrides_default
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.increment("foo.stat", 1, 0.999998)
+    assert_equal "foo.stat:1|c|@0.999998", @transport.shift
+  end
+
   def test_measure_should_return_self
     assert_equal @client, @client.measure("foo.stat", 100)
   end
