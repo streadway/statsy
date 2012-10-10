@@ -47,7 +47,7 @@ module Statsy
     #   client = Statsy::Client.new(Statsy::Transport::UDP.new(...), 0.5)
     #
     def initialize(transport=Transport::UDP.new("stats", 8125),
-		   default_sampling=1)
+                   default_sampling=1)
       @transport = transport
       @default_sampling = default_sampling
     end
