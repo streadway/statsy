@@ -49,6 +49,18 @@ class Unit < Test::Unit::TestCase
     assert_equal "foo.stat:1|c|@0.999999", @transport.shift
   end
 
+  def test_increment_with_default_sampling_should_sample
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.increment("foo.stat", 1)
+    assert_equal "foo.stat:1|c|@0.999999", @transport.shift
+  end
+
+  def test_increment_with_explicit_sampling_should_override_default
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.increment("foo.stat", 1, 0.999998)
+    assert_equal "foo.stat:1|c|@0.999998", @transport.shift
+  end
+
   def test_measure_should_return_self
     assert_equal @client, @client.measure("foo.stat", 100)
   end
@@ -138,6 +150,15 @@ class Unit < Test::Unit::TestCase
     assert_equal 2, @transport.size
     assert_equal "bar.inc:700|ms:900|ms:3|c", @transport.shift
     assert_equal "foo.inc:2|c:9|c:500|ms", @transport.shift
+  end
+
+  def test_batch_should_propagate_default_sampling
+    @client = Statsy::Client.new(@transport, 0.999999)
+    @client.batch do |c|
+      c.increment("foo.inc", 1)
+    end
+    assert_equal 1, @transport.size
+    assert_equal "foo.inc:1|c|@0.999999", @transport.shift
   end
 
   def test_record_should_return_self

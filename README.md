@@ -37,6 +37,11 @@ Use a custom transport or change the host/port pair for UDP.
     client = Statsy::Client.new(Acme::Transport::Statsd) # <- you made that
     client = Statsy::Client.new(Statsy::Transport::Queue.new) # <- if you want to test stuff
 
+Set a default sampling factor for counters.
+
+    transport = Statsy::Transport::UDP.new("graphite.acme.com", 8125)
+    client = Statsy::Client.new(transport, 0.5) # <- sample counters only 50% of the time
+
 Increment by 1, arbitrary integer, or arbitrary integer at a uniform random distribution
 
     client.increment("coffee.single-espresso")
